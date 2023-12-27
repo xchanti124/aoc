@@ -137,7 +137,7 @@ int main()
     int blue = 14;
     int final_sum = 0;
 
-    char *fcontent = malloc(sizeof(char) * flength + 1);
+    char *fcontent = malloc(sizeof(char) * flength + 1); // FREED
 
     for (long i = 0; i < flength; i++)
     {
@@ -147,7 +147,7 @@ int main()
     fcontent[flength] = '\0';
 
     int count_lines = 0;
-    char **games = split(fcontent, "\n", &count_lines);
+    char **games = split(fcontent, "\n", &count_lines); // FREED
 
     for (int i = 0; i < count_lines; i++)
     {
@@ -157,25 +157,25 @@ int main()
         int max_blue = 0;
 
         int count_parts = 0;
-        char *game = strip(games[i]);
-        char **game_parts = split(game, ":", &count_parts);
+        char *game = strip(games[i]);                       // FREED
+        char **game_parts = split(game, ":", &count_parts); // FREED
         char *game_name = game_parts[0];
-        game = strip(game_parts[1]);
+        game = strip(game_parts[1]); // FREED
 
         int count_rounds = 0;
-        char **rounds = split(game, ";", &count_rounds);
+        char **rounds = split(game, ";", &count_rounds); // FREED
 
         for (int j = 0; j < count_rounds; j++)
         {
             int count_round = 0;
-            char *round = strip(rounds[j]);
-            char **draws = split(round, ",", &count_round);
+            char *round = strip(rounds[j]);                 // FREED
+            char **draws = split(round, ",", &count_round); // FREED
 
             for (int k = 0; k < count_round; k++)
             {
                 int count_draw = 0;
-                char *draw = strip(draws[k]);
-                char **pair = split(draw, " ", &count_draw);
+                char *draw = strip(draws[k]);                // FREED
+                char **pair = split(draw, " ", &count_draw); // FREED
                 char *count = pair[0];
                 char *color = pair[1];
                 int int_count = atoi(count);
@@ -201,13 +201,51 @@ int main()
                         max_blue = int_count;
                     }
                 }
+
+                for (int l = 0; l < count_draw; l++)
+                {
+                    free(pair[l]);
+                }
+                free(pair);
+
+                free(draw);
             }
+
+            for (int k = 0; k < count_round; k++)
+            {
+                free(draws[k]);
+            }
+            free(draws);
+
+            free(round);
         }
         int set_of_cube_power = max_green * max_red * max_blue;
         final_sum += set_of_cube_power;
+
+        for (int j = 0; j < count_rounds; j++)
+        {
+            free(rounds[j]);
+        }
+        free(rounds);
+
+        for (int j = 0; j < count_parts; j++)
+        {
+            free(game_parts[j]);
+        }
+        free(game_parts);
+
+        free(game);
     }
 
     printf("%d\n", final_sum);
+
+    for (int i = 0; i < count_lines; i++)
+    {
+        free(games[i]);
+    }
+    free(games);
+
+    free(fcontent);
 
     return 0;
 }
