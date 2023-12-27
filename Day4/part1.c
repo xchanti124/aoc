@@ -131,7 +131,7 @@ int main()
     flength = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
-    char *fcontent = malloc(sizeof(char) * (flength + 1));
+    char *fcontent = malloc(sizeof(char) * (flength + 1)); // FREED
 
     for (long i = 0; i < flength; i++)
     {
@@ -145,34 +145,33 @@ int main()
     char second_part[25000];
 
     int lines_count = 0;
-
-    char **lines = split(fcontent, "\n", &lines_count);
+    char **lines = split(fcontent, "\n", &lines_count); // FREED
 
     int final_sum = 0;
 
     for (int i = 0; i < lines_count; i++)
     {
-        char *strip_lines = strip(lines[i]);
+        char *strip_lines = strip(lines[i]); // FREED
         int game_count = 0;
-        char **cur_game = split(strip_lines, ":", &game_count);
+        char **cur_game = split(strip_lines, ":", &game_count); // FREED
         char *game_id = cur_game[0];
         char *game_cards = cur_game[1];
-        char *strip_game_id = strip(game_id);
-        char *strip_game_cards = strip(game_cards);
+        char *strip_game_id = strip(game_id);       // FREED
+        char *strip_game_cards = strip(game_cards); // FREED
 
         int card_set_count = 0;
-        char **card_sets = split(strip_game_cards, "|", &card_set_count);
+        char **card_sets = split(strip_game_cards, "|", &card_set_count); // FREED
         char *lucky_numbers = card_sets[0];
         char *my_numbers = card_sets[1];
 
-        char *lucky_numbers_stripped = strip(lucky_numbers);
-        char *my_numbers_stripped = strip(my_numbers);
+        char *lucky_numbers_stripped = strip(lucky_numbers); // FREED
+        char *my_numbers_stripped = strip(my_numbers);       // FREED
 
         int lucky_count = 0;
-        char **lucky_numbers_split = split(lucky_numbers_stripped, " ", &lucky_count);
+        char **lucky_numbers_split = split(lucky_numbers_stripped, " ", &lucky_count); // FREED
 
         int my_count = 0;
-        char **my_numbers_split = split(my_numbers_stripped, " ", &my_count);
+        char **my_numbers_split = split(my_numbers_stripped, " ", &my_count); // FREED
 
         int counter = 0;
 
@@ -199,8 +198,50 @@ int main()
         int card_value = pow(2, counter - 1);
         final_sum += card_value;
         printf("%d ^ %d = %d\n", 2, counter - 1, card_value);
+
+        for (int j = 0; j < my_count; j++)
+        {
+            free(my_numbers_split[j]);
+        }
+        free(my_numbers_split);
+
+        for (int j = 0; j < lucky_count; j++)
+        {
+            free(lucky_numbers_split[j]);
+        }
+        free(lucky_numbers_split);
+
+        free(my_numbers_stripped);
+
+        free(lucky_numbers_stripped);
+
+        for (int j = 0; j < card_set_count; j++)
+        {
+            free(card_sets[j]);
+        }
+        free(card_sets);
+
+        free(strip_game_cards);
+
+        free(strip_game_id);
+
+        for (int j = 0; j < game_count; j++)
+        {
+            free(cur_game[j]);
+        }
+        free(cur_game);
+
+        free(strip_lines);
     }
     printf("final sum: %d", final_sum);
+
+    for (int i = 0; i < lines_count; i++)
+    {
+        free(lines[i]);
+    }
+    free(lines);
+
+    free(fcontent);
 
     return 0;
 }
