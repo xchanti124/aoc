@@ -138,7 +138,7 @@ int main()
     flength = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
-    char *fcontent = malloc(sizeof(char) * flength + 1);
+    char *fcontent = malloc(sizeof(char) * flength + 1); // FREED
 
     for (long i = 0; i < flength; i++)
     {
@@ -149,10 +149,10 @@ int main()
 
     int line_count = 0;
 
-    char **split_new_line = split(fcontent, "\n", &line_count);
+    char **split_new_line = split(fcontent, "\n", &line_count); // FREED
 
     int final_sum = 0;
-    bool **visited = malloc(sizeof(bool *) * 3);
+    bool **visited = malloc(sizeof(bool *) * 3); // FREED
 
     int max_j = 0;
     int max_i = 0;
@@ -228,9 +228,19 @@ int main()
 
     printf("final sum: %d\n", final_sum);
 
-    // char final_num[100];
-    // ['4', '\0', '\0', '\0', '\0', ..., '\0']
-    // ['3', '4', '\0', '\0', '\0', ..., '\0']
+    for (int i = 0; i < 3; i++)
+    {
+        free(visited[i]);
+    }
+    free(visited);
+
+    for (int i = 0; i < line_count; i++)
+    {
+        free(split_new_line[i]);
+    }
+    free(split_new_line);
+
+    free(fcontent);
 
     return 0;
 }

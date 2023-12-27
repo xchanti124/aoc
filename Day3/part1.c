@@ -126,7 +126,7 @@ int main()
     flength = ftell(fptr);
     fseek(fptr, 0, SEEK_SET);
 
-    char *fcontent = malloc(sizeof(char) * flength + 1);
+    char *fcontent = malloc(sizeof(char) * flength + 1); // FREED
 
     for (long i = 0; i < flength; i++)
     {
@@ -137,29 +137,10 @@ int main()
 
     int line_count = 0;
 
-    char **split_new_line = split(fcontent, "\n", &line_count);
-
-    /*
-
-    char** char_buffer = malloc(sizeof(char) * line_count);
-
-    for (int i = 0; i < line_count; i++) {
-        char_buffer[i] = malloc(sizeof(char) * strlen(split_new_line[i]));
-    }
-
-
-    ///// stuff
-
-
-    for (int i = 0; i < line_count; i++) {
-        free(char_buffer[i]);
-    }
-    free(char_buffer);
-
-    */
+    char **split_new_line = split(fcontent, "\n", &line_count); // FREED
 
     int final_sum = 0;
-    bool **visited = malloc(sizeof(bool *) * line_count);
+    bool **visited = malloc(sizeof(bool *) * line_count); // FREED
 
     int max_j = 0;
     int max_i = 0;
@@ -199,9 +180,8 @@ int main()
                         }
 
                         bool is_numeric = split_new_line[row][col] > 47 && split_new_line[row][col] < 58;
-                        // printf("accessing %d:%d\n", row, col);
+
                         bool is_visited = visited[row][col];
-                        // printf("accessed.\n");
 
                         if (is_numeric && !is_visited)
                         {
@@ -215,9 +195,15 @@ int main()
 
     printf("final sum: %d\n", final_sum);
 
-    // char final_num[100];
-    // ['4', '\0', '\0', '\0', '\0', ..., '\0']
-    // ['3', '4', '\0', '\0', '\0', ..., '\0']
+    for (int i = 0; i < line_count; i++)
+    {
+        free(split_new_line[i]);
+        free(visited[i]);
+    }
+    free(split_new_line);
+    free(visited);
+
+    free(fcontent);
 
     return 0;
 }
